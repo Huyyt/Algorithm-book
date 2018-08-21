@@ -1,17 +1,6 @@
-//#include <bits/stdc++.h>
-#include<iostream>
-#include<cstdio>
-#include<cstdlib>
-#include<cstring>
-#include<cmath>
-#include<stdio.h>
-#include<string.h>
-#include<algorithm>
-#include<map>
-#include<set>
-#include<vector>
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn = 5e5 + 500;
+const int maxn = 1e5 + 500;
 // heappos[] , 点 i 在堆的位置
 // ha[]  堆的位置[] 存储的是点 i
 int heappos[2000 + 50] , ha[2000 + 50];
@@ -20,6 +9,7 @@ struct Heap
 {
         const static int HeapSize =  2010 ;
         int val[HeapSize] , sz;
+
         void swappos(int x , int y)
         {
                 int ID1 = ha[x];
@@ -101,6 +91,7 @@ struct Heap
                 swappos( 1 , sz--);
                 maintain_down( 1 );
         }
+
         void init()
         {
                 sz = 0 ;
@@ -112,11 +103,11 @@ struct Edge
 };
 Edge e[maxn << 1];
 int n , m , head[2000 + 50] , tot , vis[2000 + 50] , flag[2000 + 50] , mincost[2000 + 50] , mat[2000 + 50][2000 + 50] ;
-inline void addedge(int u , int v )
+void addedge(int u , int v )
 {
         e[tot].v = v, e[tot].nxt = head[u], head[u] = tot++;
 }
-inline void dfs(int u)
+void dfs(int u)
 {
         vis[u] = 1;
         for (int i = head[u] ; ~i ; i = e[i].nxt)
@@ -129,9 +120,8 @@ inline void dfs(int u)
                 dfs( v );
         }
 }
-
 // s , 倒数第二个 ， t 倒数第一个
-inline int prim(int & s , int & t , int num)
+int prim(int & s , int & t , int num)
 {
         heap.init();
         int base;
@@ -188,8 +178,7 @@ inline int prim(int & s , int & t , int num)
         }
         return result;
 }
-
-inline int stoer()
+int stoer()
 {
         int res = 0x7fffffff , s , t;
         for (int i = 1 ; i < n ; ++ i)
@@ -219,50 +208,29 @@ inline int stoer()
         }
         return res;
 }
-void init()
-{
-        tot = 0;
-        for (int i = 0; i <= n + 1; i++)
-        {
-                head[i] = -1;
-                ha[i] = heappos[i] = vis[i] = flag[i] = mincost[i] = 0;
-                for (int j = 0; j <= n + 1; j++)
-                {
-                        mat[i][j] = mat[j][i] = 0;
-                }
-        }
-}
 int main(int argc, char *argv[])
 {
-        while (scanf("%d%d", &n, &m) == 2)
+        scanf("%d%d", &n, &m);
+        memset(head, -1, sizeof(head));
+        for (int i = 1 ; i <= m ; ++ i)
         {
-                bool jqk = true;
-                init();
-                for (int i = 1 ; i <= m ; ++ i)
+                int u , v , w;
+                scanf("%d%d%d", &u , &v , &w);  //start from 1
+                if (mat[u][v] == 0)
                 {
-                        int u , v , w;
-                        scanf("%d%d%d", &u , &v , &w);
-                        u++, v++;
-                        if (mat[u][v] == 0)
-                        {
-                                addedge( u , v  );
-                                addedge( v , u  );
-                        }
-                        mat[u][v] += w, mat[v][u] += w;
+                        addedge( u , v  );
+                        addedge( v , u  );
                 }
-                dfs( 1 );
-                int fa = 1;
-                for (int i = 1 ; i <= n ; ++ i)
-                        if (!vis[i])
-                        {
-                                printf("0\n");
-                                jqk = false;
-                                break;
-                        }
-                if (jqk)
-                {
-                        printf("%d\n", stoer());
-                }
+                mat[u][v] += w, mat[v][u] += w;
         }
+        dfs( 1 );
+        int fa = 1;
+        for (int i = 1 ; i <= n ; ++ i)
+                if (!vis[i])
+                {
+                        printf("0\n");
+                        return 0;
+                }
+        printf("%d\n", stoer());
         return 0;
 }

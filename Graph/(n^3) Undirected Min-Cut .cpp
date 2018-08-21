@@ -1,267 +1,92 @@
-//#include <bits/stdc++.h>
-#include<iostream>
-#include<cstdio>
-#include<cstdlib>
-#include<cstring>
-#include<cmath>
-#include<stdio.h>
-#include<string.h>
-#include<algorithm>
-#include<map>
-#include<set>
-#include<vector>
+#include<bits/stdc++.h>
 using namespace std;
-const int maxn = 5e5 + 500;
-// heappos[] , 点 i 在堆的位置
-// ha[]  堆的位置[] 存储的是点 i
-int heappos[2000 + 50] , ha[2000 + 50];
-// prim 大根堆
-struct Heap
+#define MAX_N 505
+#define INF 0x3f3f3f3f
+int G[MAX_N][MAX_N];
+int v[MAX_N];            //    v[i]代表节点i合并到的顶点
+int w[MAX_N];            //    定义w(A,x) = ∑w(v[i],x)，v[i]∈A
+bool visited[MAX_N];    //    用来标记是否该点加入了A集合
+int squ[MAX_N];       //记录移除的节点次序
+int index;
+int stoer_wagner(int n)
 {
-        const static int HeapSize =  2010 ;
-        int val[HeapSize] , sz;
-        void swappos(int x , int y)
+        int min_cut = INF, r = 0;
+        for (int i = 0; i < n; ++i)
         {
-                int ID1 = ha[x];
-                int ID2 = ha[y];
-                heappos[ID1] = y;
-                heappos[ID2] = x;
-                ha[x] = ID2;
-                ha[y] = ID1;
-                swap( val[x] , val[y] );
+                v[i] = i;        //    初始还未合并，都代表节点本身
         }
-        //向上维护
-        int maintain_up(int pos)
+        while (n > 1)
         {
-                int cur = pos , pre = cur >> 1;
-                while (pre)
+                int pre = 0;    //    pre用来表示之前加入A集合的点（在t之前一个加进去的点）
+                memset(visited, 0, sizeof(visited));
+                memset(w, 0, sizeof(w));
+                for (int i = 1; i < n; ++i) //求出 某一轮最大生成树的最后两个节点，并且去除最后的t，将与t连接的边归并
                 {
-                        if (val[cur] > val[pre])
+                        int k = -1;
+                        for (int j = 1; j < n; ++j)  //    选取V-A中的w(A,x)最大的点x加入集合
                         {
-                                swappos( cur , pre );
-                                cur = pre;
+                                if (!visited[v[j]])
+                                {
+                                        w[v[j]] += G[v[pre]][v[j]];
+                                        if (k == -1 || w[v[k]] < w[v[j]])
+                                        {
+                                                k = j;
+                                        }
+                                }
                         }
-                        else
-                        {
-                                break;
-                        }
-                        pre = cur >> 1;
-                }
-                return cur;
-        }
 
-        //向下维护
-        void maintain_down(int pos)
-        {
-                int cur = pos;
-                while (cur * 2 <= sz)
-                {
-                        int lson = cur << 1;
-                        int rson = cur << 1 | 1;
-                        if (rson > sz)
+                        visited[v[k]] = true;        //    标记该点x已经加入A集合
+                        if (i == n - 1)                //    若|A|=|V|（所有点都加入了A），结束
                         {
-                                rson ^= 1;
+                                const int s = v[pre], t = v[k];        //    令倒数第二个加入A的点（v[pre]）为s，最后一个加入A的点（v[k]）为t
+                                cout << t << "--->" << s << endl;
+                                squ[r++] = t;
+                                if (w[t] < min_cut)
+                                {
+                                        min_cut = w[t];
+                                        index = r;
+                                }
+                                //min_cut = min(min_cut, w[t]);        //    则s-t最小割为w(A,t)，用其更新min_cut
+                                for (int j = 0; j < n; ++j)            //    Contract(s, t)
+                                {
+                                        G[s][v[j]] += G[v[j]][t];
+                                        G[v[j]][s] += G[v[j]][t];
+                                }
+                                v[k] = v[--n];                        //    删除最后一个点（即删除t，也即将t合并到s）
                         }
-                        int nxt = lson;
-                        if (val[rson] > val[lson])
-                        {
-                                nxt = rson;
-                        }
-                        if (val[cur] < val[nxt])
-                        {
-                                swappos(cur , nxt);
-                                cur = nxt;
-                        }
-                        else
-                        {
-                                break;
-                        }
+                        // else 继续
+                        pre = k;
                 }
         }
-
-        int insert(int x , int y)
-        {
-                val[++sz] = x;
-                heappos[y] = sz;
-                ha[sz] = y;
-                return maintain_up(sz);
-        }
-
-        int top()
-        {
-                return val[1];
-        }
-
-        void pop()
-        {
-                if (sz == 0)
-                {
-                        return;
-                }
-                swappos( 1 , sz--);
-                maintain_down( 1 );
-        }
-        void init()
-        {
-                sz = 0 ;
-        }
-} heap;
-struct Edge
-{
-        int v , nxt;
-};
-Edge e[maxn << 1];
-int n , m , head[2000 + 50] , tot , vis[2000 + 50] , flag[2000 + 50] , mincost[2000 + 50] , mat[2000 + 50][2000 + 50] ;
-inline void addedge(int u , int v )
-{
-        e[tot].v = v, e[tot].nxt = head[u], head[u] = tot++;
-}
-inline void dfs(int u)
-{
-        vis[u] = 1;
-        for (int i = head[u] ; ~i ; i = e[i].nxt)
-        {
-                int v = e[i].v;
-                if (vis[v])
-                {
-                        continue;
-                }
-                dfs( v );
-        }
-}
-
-// s , 倒数第二个 ， t 倒数第一个
-inline int prim(int & s , int & t , int num)
-{
-        heap.init();
-        int base;
-        for (int i = 1 ; i <= n ; ++ i) if (!flag[i])
-                {
-                        base = i ;
-                        break;
-                }
-        t = base;
-        for (int i = 1 ; i <= n ; ++ i)
-        {
-                if (flag[i] || i == base)
-                {
-                        mincost[i] = -1;
-                }
-                else
-                {
-                        heap.insert(mat[base][i] , i ) ;
-                        mincost[i] = mat[base][i];
-                }
-        }
-        for (int i = 1 ; i <= num ; ++ i)
-        {
-                s = t , t = ha[1];// O(1) Get
-                heap.pop();
-                int sb = t;
-                mincost[sb] = -1;
-                for (int j = head[sb] ; ~j ; j = e[j].nxt) // mlogn更新堆
-                {
-                        int v = e[j].v , w = mat[sb][v];
-                        if (flag[v] || mincost[v] == -1)
-                        {
-                                continue;        // 虚拟点 or 已经处理过的点
-                        }
-                        else
-                        {
-                                mincost[v] += w;
-                                int hs = heappos[v];
-                                heap.val[hs] += w;
-                                heap.maintain_up(hs);// 更新堆
-                        }
-                }
-        }
-
-        //计算切割值
-        int result = 0;
-        for (int i = 1 ; i <= n ; ++ i)
-        {
-                if (flag[i] || i == t)
-                {
-                        continue;
-                }
-                result += mat[t][i];
-        }
-        return result;
-}
-
-inline int stoer()
-{
-        int res = 0x7fffffff , s , t;
-        for (int i = 1 ; i < n ; ++ i)
-        {
-                res = min( res , prim( s , t , n - i));
-                flag[t] = 1;
-                for (int j = head[t] ; ~j ; j = e[j].nxt)
-                {
-                        int v = e[j].v;
-                        if (flag[v])
-                        {
-                                continue;
-                        }
-                        if (s == v)
-                        {
-                                continue;
-                        }
-                        int ori = mat[s][v];
-                        mat[s][v] += mat[t][v];
-                        mat[v][s] += mat[t][v];
-                        if (ori == 0 && mat[s][v])
-                        {
-                                addedge( s , v );
-                                addedge( v , s );
-                        }
-                }
-        }
-        return res;
-}
-void init()
-{
-        tot = 0;
-        for (int i = 0; i <= n + 1; i++)
-        {
-                head[i] = -1;
-                ha[i] = heappos[i] = vis[i] = flag[i] = mincost[i] = 0;
-                for (int j = 0; j <= n + 1; j++)
-                {
-                        mat[i][j] = mat[j][i] = 0;
-                }
-        }
+        return min_cut;
 }
 int main(int argc, char *argv[])
 {
-        while (scanf("%d%d", &n, &m) == 2)
+        int n, m;
+        while (scanf("%d%d", &n, &m) != EOF)
         {
-                bool jqk = true;
-                init();
-                for (int i = 1 ; i <= m ; ++ i)
+                memset(G, 0, sizeof(G));
+                while (m--)
                 {
-                        int u , v , w;
-                        scanf("%d%d%d", &u , &v , &w);
-                        u++, v++;
-                        if (mat[u][v] == 0)
-                        {
-                                addedge( u , v  );
-                                addedge( v , u  );
-                        }
-                        mat[u][v] += w, mat[v][u] += w;
+                        int u, v, w;
+                        scanf("%d%d%d", &u, &v, &w);
+                        //u--, v--;
+                        G[u][v] += w;
+                        G[v][u] += w;
                 }
-                dfs( 1 );
-                int fa = 1;
-                for (int i = 1 ; i <= n ; ++ i)
-                        if (!vis[i])
-                        {
-                                printf("0\n");
-                                jqk = false;
-                                break;
-                        }
-                if (jqk)
+                int z = n;
+                //printf("%d\n", stoer_wagner(n));
+                cout << "\r\n归并的步骤为：" << endl;
+                int res = stoer_wagner(n);
+                cout << "\r\n最小割的总权值为： " << res << "\r\n图划分为部分A：";
+                //cout<<"图划分为部分A：";
+                for (int i = 0; i < z; i++)
                 {
-                        printf("%d\n", stoer());
+                        if (i == index)
+                        {
+                                cout << "部分B：";
+                        }
+                        cout << squ[i] << "  ";
                 }
         }
         return 0;
