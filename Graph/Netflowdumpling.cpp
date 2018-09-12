@@ -3,16 +3,16 @@ using namespace std;
 const int MAXN = 1050;
 const int MAXM = 1000;
 const int INF = 1000000050;
-int fir[MAXN], cur[MAXN], lev[MAXN], too[MAXM], nxt[MAXM], f[MAXM], ed, S, T;
+int Head[MAXN], cur[MAXN], lev[MAXN], to[MAXM], nxt[MAXM], f[MAXM], ed, S, T;
 void addedge(int u, int v, int cap)
 {
-        too[++ed] = v;
-        nxt[ed] = fir[u];
-        fir[u] = ed;
+        to[++ed] = v;
+        nxt[ed] = Head[u];
+        Head[u] = ed;
         f[ed] = cap;
-        too[++ed] = u;
-        nxt[ed] = fir[v];
-        fir[v] = ed;
+        to[++ed] = u;
+        nxt[ed] = Head[v];
+        Head[v] = ed;
         f[ed] = 0;
         return;
 }
@@ -27,13 +27,21 @@ bool BFS()
         {
                 u = q.front();
                 q.pop();
-                for (int i = fir[u]; i; i = nxt[i]) if (f[i] && lev[too[i]] == -1)
+                for (int i = Head[u]; i; i = nxt[i])
+                        if (f[i] && lev[to[i]] == -1)
                         {
-                                lev[too[i]] = lev[u] + 1;
-                                q.push(too[i]);
+                                lev[to[i]] = lev[u] + 1;
+                                q.push(to[i]);
+                                /*
+                                if (to[i] == T)
+                                {
+                                        return 1;
+                                }
+                                magic one way optimize
+                                */
                         }
         }
-        memcpy(cur, fir, sizeof fir);
+        memcpy(cur, Head, sizeof Head);
         return lev[T] != -1;
 }
 int DFS(int u, int maxf)
@@ -43,9 +51,10 @@ int DFS(int u, int maxf)
                 return maxf;
         }
         int cnt = 0;
-        for (int &i = cur[u], tem; i; i = nxt[i]) if (f[i] && lev[too[i]] == lev[u] + 1)
+        for (int &i = cur[u], tem; i; i = nxt[i])
+                if (f[i] && lev[to[i]] == lev[u] + 1)
                 {
-                        tem = DFS(too[i], min(maxf, f[i]));
+                        tem = DFS(to[i], min(maxf, f[i]));
                         maxf -= tem;
                         f[i] -= tem;
                         f[i ^ 1] += tem;
@@ -72,7 +81,7 @@ int Dinic()
 }
 void init(int SS, int TT)
 {
-        memset(fir, 0, sizeof(fir));
+        memset(Head, 0, sizeof(Head));
         ed = 1;
         S = SS;
         T = TT;
