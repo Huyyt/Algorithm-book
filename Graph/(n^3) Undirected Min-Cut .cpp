@@ -1,3 +1,4 @@
+//(n^3) Undirected Min-Cut
 #include<bits/stdc++.h>
 using namespace std;
 #define MAX_N 505
