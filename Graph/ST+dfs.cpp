@@ -1,6 +1,6 @@
 //ST+dfs
-int depth[2 * MAXN], ver[2 * MAXN], STdfn[MAXN], dfs_clock = 0;
-int dp[MAXN][25];
+int depth[MAXN << 1], ver[MAXN << 1], STdfn[MAXN], dfs_clock = 0;
+int STdp[MAXN << 1][25];
 void dfs(int x, int fa, int deep)
 {
         ver[++dfs_clock] = x;
@@ -21,20 +21,20 @@ void ST(int n)
 {
         for (int i = 1; i <= n; i++)
         {
-                dp[i][0] = i;
+                STdp[i][0] = i;
         }
         for (int j = 1; (1 << j) <= n; j++)
         {
                 for (int i = 1; i + (1 << j) - 1 <= n; i++)
                 {
-                        dp[i][j] = depth[dp[i][j - 1]] < depth[dp[i + (1 << (j - 1))][j - 1]] ? dp[i][j - 1] : dp[i + (1 << (j - 1))][j - 1];
+                        STdp[i][j] = depth[STdp[i][j - 1]] < depth[STdp[i + (1 << (j - 1))][j - 1]] ? STdp[i][j - 1] : STdp[i + (1 << (j - 1))][j - 1];
                 }
         }
 }
 int RMQ(int l, int r)
 {
-        int k = (int)(log((double)(r-l+1)) / log(2.0));
-        return depth[dp[l][k]] < depth[dp[r - (1 << k) + 1][k]] ? dp[l][k] : dp[r - (1 << k) + 1][k];
+        int k = (int)(log((double)(r - l + 1)) / log(2.0));
+        return depth[STdp[l][k]] < depth[STdp[r - (1 << k) + 1][k]] ? STdp[l][k] : STdp[r - (1 << k) + 1][k];
 }
 int LCA(int u, int v)
 {
