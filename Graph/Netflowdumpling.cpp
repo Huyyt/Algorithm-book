@@ -5,7 +5,7 @@ const int MAXN = 1050;
 const int MAXM = 1000;
 const int INF = 1000000050;
 int Head[MAXN], cur[MAXN], lev[MAXN], to[MAXM], nxt[MAXM], f[MAXM], ed, S, T;
-void addedge(int u, int v, int cap)
+inline void addedge(int u, int v, int cap)
 {
         to[++ed] = v;
         nxt[ed] = Head[u];
@@ -17,7 +17,7 @@ void addedge(int u, int v, int cap)
         f[ed] = 0;
         return;
 }
-bool BFS()
+inline bool BFS()
 {
         int u;
         memset(lev, -1, sizeof(lev));
@@ -45,7 +45,7 @@ bool BFS()
         memcpy(cur, Head, sizeof Head);
         return lev[T] != -1;
 }
-int DFS(int u, int maxf)
+inline int DFS(int u, int maxf)
 {
         if (u == T || !maxf)
         {
