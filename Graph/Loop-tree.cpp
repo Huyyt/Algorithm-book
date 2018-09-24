@@ -80,71 +80,6 @@ void dfs(int x, int pre)
         }
         vis[x] = 2;
 }
-struct Dstate
-{
-        int x, pre, curi;
-        Dstate(const int &X = 0, const int &P = 0, const int &C = 0): x(X), pre(P), curi(C) { }
-};
-stack<Dstate> Dst;
-void DFS(int x, int pre)
-{
-        int i, v;
-        while (Dst.size())
-        {
-                Dst.pop();
-        }
-        Dst.push(Dstate(x, pre, Head[x]));
-        while (Dst.size())
-        {
-                i = Dst.top().curi;
-                v = to[i];
-                x = Dst.top().x;
-                pre = Dst.top().pre;
-                if (!i)
-                {
-                        //exit
-                        Dst.pop();
-                        vis[x] = 2;
-                        continue;
-                }
-                else if ((pre != -1 && i == (pre ^ 1))
-                                || vis[v] == 2)
-                {
-                        //continue
-                        Dst.top().curi = nxt[i];
-                        continue;
-                }
-                if (vis[v] == 1)
-                {
-                        circle[x] = true;
-                        nxtcircle[x] = nnxt[x] = i;
-                        int cur = v;
-                        while (cur != x)
-                        {
-                                circle[cur] = true;
-                                nxtcircle[cur] = nnxt[cur];
-                                cur = to[nxtcircle[cur]];
-                        }
-                        Dst.pop();
-                }
-                else
-                {
-                        nnxt[x] = i;
-                        Dst.push(Dstate(v, i, Head[v]));
-                }
-        }
-        return;
-}
-struct Zstate
-{
-        int x, i;
-        bool usef;
-        Zstate(const int &X = 0, const int &I = 0): x(X), i(I)
-        {
-                usef = false;
-        }
-};
-stack<Zstate> Zst;
 void ZJdp(int x)
 {
         vis[x] = 1;
@@ -161,47 +96,8 @@ void ZJdp(int x)
                         ansnow = max(ansnow, dpd[x] + dpd[v] + value[i]);
                         dpd[x] = max(dpd[x], dpd[v] + value[i]);
                 }
+
         }
-}
-void JZDP(int x)
-{
-        int i, v;
-        bool flag;
-        while (Zst.size())
-        {
-                Zst.pop();
-        }
-        Zst.push(Zstate(x, Head[x]));
-        while (Zst.size())
-        {
-                x = Zst.top().x;
-                i = Zst.top().i;
-                flag = Zst.top().usef;
-                v = to[i];
-                vis[x] = true;
-                if (!i)
-                {
-                        Zst.pop();
-                        continue;
-                }
-                if (vis[v])
-                {
-                        Zst.top().i = nxt[i];
-                        Zst.top().usef = false;
-                        continue;
-                }
-                if (!flag)
-                {
-                        Zst.top().usef = true;
-                        Zst.push(Zstate(v, Head[v]));
-                }
-                else if (!circle[v])
-                {
-                        ansnow = max(ansnow, dpd[x] + dpd[v] + value[i]);
-                        dpd[x] = max(dpd[x], dpd[v] + value[i]);
-                }
-        }
-        return;
 }
 int main()
 {
@@ -217,8 +113,7 @@ int main()
         {
                 if (!vis[i])
                 {
-                        DFS(i, -1);
-                        //dfs(i, -1);
+                        dfs(i, -1);
                 }
         }
         mem(vis, 0);
@@ -230,8 +125,7 @@ int main()
                         if (!vis[i])
                         {
                                 ansnow = 0;
-                                JZDP(i);
-                                //ZJdp(i);
+                                ZJdp(i);
                                 top = tail = cnt = 0;
                                 que[tail++] = 0;
                                 cur = to[nxtcircle[i]];
