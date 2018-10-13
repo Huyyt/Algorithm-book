@@ -6,13 +6,11 @@ const int maxn = 1e5 + 500;
 // ha[]  堆的位置[] 存储的是点 i
 int heappos[2000 + 50] , ha[2000 + 50];
 // prim 大根堆
-struct Heap
-{
+struct Heap {
         const static int HeapSize =  2010 ;
         int val[HeapSize] , sz;
 
-        void swappos(int x , int y)
-        {
+        void swappos(int x , int y) {
                 int ID1 = ha[x];
                 int ID2 = ha[y];
                 heappos[ID1] = y;
@@ -22,18 +20,13 @@ struct Heap
                 swap( val[x] , val[y] );
         }
         //向上维护
-        int maintain_up(int pos)
-        {
+        int maintain_up(int pos) {
                 int cur = pos , pre = cur >> 1;
-                while (pre)
-                {
-                        if (val[cur] > val[pre])
-                        {
+                while (pre) {
+                        if (val[cur] > val[pre]) {
                                 swappos( cur , pre );
                                 cur = pre;
-                        }
-                        else
-                        {
+                        } else {
                                 break;
                         }
                         pre = cur >> 1;
@@ -42,123 +35,95 @@ struct Heap
         }
 
         //向下维护
-        void maintain_down(int pos)
-        {
+        void maintain_down(int pos) {
                 int cur = pos;
-                while (cur * 2 <= sz)
-                {
+                while (cur * 2 <= sz) {
                         int lson = cur << 1;
                         int rson = cur << 1 | 1;
-                        if (rson > sz)
-                        {
+                        if (rson > sz) {
                                 rson ^= 1;
                         }
                         int nxt = lson;
-                        if (val[rson] > val[lson])
-                        {
+                        if (val[rson] > val[lson]) {
                                 nxt = rson;
                         }
-                        if (val[cur] < val[nxt])
-                        {
+                        if (val[cur] < val[nxt]) {
                                 swappos(cur , nxt);
                                 cur = nxt;
-                        }
-                        else
-                        {
+                        } else {
                                 break;
                         }
                 }
         }
 
-        int insert(int x , int y)
-        {
+        int insert(int x , int y) {
                 val[++sz] = x;
                 heappos[y] = sz;
                 ha[sz] = y;
                 return maintain_up(sz);
         }
 
-        int top()
-        {
+        int top() {
                 return val[1];
         }
 
-        void pop()
-        {
-                if (sz == 0)
-                {
+        void pop() {
+                if (sz == 0) {
                         return;
                 }
                 swappos( 1 , sz--);
                 maintain_down( 1 );
         }
 
-        void init()
-        {
+        void init() {
                 sz = 0 ;
         }
 } heap;
-struct Edge
-{
+struct Edge {
         int v , nxt;
 };
 Edge e[maxn << 1];
 int n , m , head[2000 + 50] , tot , vis[2000 + 50] , flag[2000 + 50] , mincost[2000 + 50] , mat[2000 + 50][2000 + 50] ;
-void addedge(int u , int v )
-{
+void addedge(int u , int v ) {
         e[tot].v = v, e[tot].nxt = head[u], head[u] = tot++;
 }
-void dfs(int u)
-{
+void dfs(int u) {
         vis[u] = 1;
-        for (int i = head[u] ; ~i ; i = e[i].nxt)
-        {
+        for (int i = head[u] ; ~i ; i = e[i].nxt) {
                 int v = e[i].v;
-                if (vis[v])
-                {
+                if (vis[v]) {
                         continue;
                 }
                 dfs( v );
         }
 }
 // s , 倒数第二个 ， t 倒数第一个
-int prim(int & s , int & t , int num)
-{
+int prim(int & s , int & t , int num) {
         heap.init();
         int base;
-        for (int i = 1 ; i <= n ; ++ i) if (!flag[i])
-                {
+        for (int i = 1 ; i <= n ; ++ i) if (!flag[i]) {
                         base = i ;
                         break;
                 }
         t = base;
-        for (int i = 1 ; i <= n ; ++ i)
-        {
-                if (flag[i] || i == base)
-                {
+        for (int i = 1 ; i <= n ; ++ i) {
+                if (flag[i] || i == base) {
                         mincost[i] = -1;
-                }
-                else
-                {
+                } else {
                         heap.insert(mat[base][i] , i ) ;
                         mincost[i] = mat[base][i];
                 }
         }
-        for (int i = 1 ; i <= num ; ++ i)
-        {
+        for (int i = 1 ; i <= num ; ++ i) {
                 s = t , t = ha[1];// O(1) Get
                 heap.pop();
                 int sb = t;
                 mincost[sb] = -1;
-                for (int j = head[sb] ; ~j ; j = e[j].nxt) // mlogn更新堆
-                {
+                for (int j = head[sb] ; ~j ; j = e[j].nxt) { // mlogn更新堆
                         int v = e[j].v , w = mat[sb][v];
-                        if (flag[v] || mincost[v] == -1)
-                        {
+                        if (flag[v] || mincost[v] == -1) {
                                 continue;        // 虚拟点 or 已经处理过的点
-                        }
-                        else
-                        {
+                        } else {
                                 mincost[v] += w;
                                 int hs = heappos[v];
                                 heap.val[hs] += w;
@@ -169,39 +134,31 @@ int prim(int & s , int & t , int num)
 
         //计算切割值
         int result = 0;
-        for (int i = 1 ; i <= n ; ++ i)
-        {
-                if (flag[i] || i == t)
-                {
+        for (int i = 1 ; i <= n ; ++ i) {
+                if (flag[i] || i == t) {
                         continue;
                 }
                 result += mat[t][i];
         }
         return result;
 }
-int stoer()
-{
+int stoer() {
         int res = 0x7fffffff , s , t;
-        for (int i = 1 ; i < n ; ++ i)
-        {
+        for (int i = 1 ; i < n ; ++ i) {
                 res = min( res , prim( s , t , n - i));
                 flag[t] = 1;
-                for (int j = head[t] ; ~j ; j = e[j].nxt)
-                {
+                for (int j = head[t] ; ~j ; j = e[j].nxt) {
                         int v = e[j].v;
-                        if (flag[v])
-                        {
+                        if (flag[v]) {
                                 continue;
                         }
-                        if (s == v)
-                        {
+                        if (s == v) {
                                 continue;
                         }
                         int ori = mat[s][v];
                         mat[s][v] += mat[t][v];
                         mat[v][s] += mat[t][v];
-                        if (ori == 0 && mat[s][v])
-                        {
+                        if (ori == 0 && mat[s][v]) {
                                 addedge( s , v );
                                 addedge( v , s );
                         }
@@ -209,16 +166,13 @@ int stoer()
         }
         return res;
 }
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
         scanf("%d%d", &n, &m);
         memset(head, -1, sizeof(head));
-        for (int i = 1 ; i <= m ; ++ i)
-        {
+        for (int i = 1 ; i <= m ; ++ i) {
                 int u , v , w;
                 scanf("%d%d%d", &u , &v , &w);  //start from 1
-                if (mat[u][v] == 0)
-                {
+                if (mat[u][v] == 0) {
                         addedge( u , v  );
                         addedge( v , u  );
                 }
@@ -227,8 +181,7 @@ int main(int argc, char *argv[])
         dfs( 1 );
         int fa = 1;
         for (int i = 1 ; i <= n ; ++ i)
-                if (!vis[i])
-                {
+                if (!vis[i]) {
                         printf("0\n");
                         return 0;
                 }
