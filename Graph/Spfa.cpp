@@ -1,7 +1,12 @@
 //Spfa
-int spfa(int s) {
-        mem(d, 0x3f), mem(vis, 0);
-        mem(cnt, 0);
+int d[MAXN], cnt[MAXN];
+bool vis[MAXN];
+int spfa(int s, int N) {
+        for (int i = 1; i <= N; i++) {
+                d[i] = INT_MAX;
+                vis[i] = false;
+                cnt[i] = 0;
+        }
         cnt[s] = d[s] = 0, v[s] = 1;
         q.push(s);
         while (q.size()) {
