@@ -1,6 +1,7 @@
 //Spfa
 int d[MAXN], cnt[MAXN];
 bool vis[MAXN];
+queue<int> q;
 int spfa(int s, int N) {
         for (int i = 1; i <= N; i++) {
                 d[i] = INT_MAX;
