@@ -7,7 +7,7 @@ int spfa(int s, int N) {
                 vis[i] = false;
                 cnt[i] = 0;
         }
-        cnt[s] = d[s] = 0, v[s] = 1;
+        cnt[s] = d[s] = 0, vis[s] = 1;
         q.push(s);
         while (q.size()) {
                 int x = q.front();
