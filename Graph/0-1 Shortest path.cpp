@@ -1,5 +1,6 @@
 //0-1 Shortest path
-//POJ 3662 1��N��K+1������Ȩ·����С(���ִ�+01���·)
+//POJ 3662 1到N第K+1大条边权路径最小(二分答案+01最短路)
+//0-1 Shortest path:双端队列实现 0权值边更新的点放在队首 1权值更新的点放在队尾 
 bool check(int x) {
         deque<int>Q;
         Q.push_back(1);
