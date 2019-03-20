@@ -1,1 +1,68 @@
-
+#include<bits/stdc++.h>
+using namespace std;
+const int MAXN = 1e5 + 5;
+int n,m,ans;
+struct Tree{
+	int sum;
+	int tag;
+}t[MAXN<<2];//4n
+void update(int pos)
+{
+	t[pos].sum = t[pos<<1].sum + t[pos<<1|1].sum;
+}
+void build(int L,int R,int pos)
+{
+	if(L == R)
+	{
+		scanf("%d",&t[pos].sum);
+		return;
+	}
+	int mid = (L + R) >> 1;
+	build(L,mid,pos<<1);
+	build(mid + 1,R,pos<<1|1);
+	update(pos);
+}
+void pushdown(int L,int R,int pos)
+{
+	if(!t[pos].tag) return;
+	int mid = (L + R) >> 1;
+	t[pos<<1].sum += t[pos].tag * (mid - L);
+	t[pos<<1|1].sum += t[pos].tag * (R - (mid + 1) + 1);
+	t[pos<<1].tag += t[pos].tag;
+	t[pos<<1|1].tag += t[pos].tag;
+	t[pos].tag = 0;
+}
+void add(int L,int R,int ll,int rr,int pos,int v)
+{
+	if(ll <= L && R <= rr)
+	{
+		t[pos].sum += v * (R - L + 1);
+		t[pos].tag += v;
+		return;
+	}
+	if(R < ll || rr < L) return;
+	pushdown(L,R,pos);
+	int mid = (L + R) >> 1;
+	add(L,mid,ll,rr,pos<<1,v);
+	add(mid + 1,R,ll,rr,pos<<1|1,v);
+	update(pos);
+}
+void query(int L,int R,int ll,int rr,int pos)
+{
+	if(ll <= L && R <= rr)
+	{
+		ans += t[pos].sum;
+		return;
+	}
+	if(R < ll || rr < L) return;
+	pushdown(L,R,pos);
+	int mid = (L + R) >> 1;
+	query(L,mid,ll,rr,pos<<1);
+	query(mid + 1,R,ll,rr,pos<<1|1)
+	return;
+}
+int main()
+{
+	___________________________
+	return 0;
+}
