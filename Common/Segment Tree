@@ -1,10 +1,10 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n, p, a, b, m, x, y, ans;
-struct node {
+struct Seg_Tre {
         int l, r;
         int w, f;
-} tree[400005];
+} tree[400001];
 inline void build(int k, int ll, int rr) { //建树
         tree[k].l = ll, tree[k].r = rr;
         if (tree[k].l == tree[k].r) {
