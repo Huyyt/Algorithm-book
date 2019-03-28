@@ -1,9 +1,11 @@
 //Mcmf Xiper
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
 struct Mcmf {
-        const static int MAXN = 10000;
+        const static int MAXN = 20005;
         const static int MAXM = 100000;
         int INF = 0x3f3f3f3f;
-
         struct Edge {
                 int to, next, cap, flow, cost;
                 int x, y;
@@ -31,7 +33,8 @@ struct Mcmf {
                 edge[tol]. next = head[v];
                 head[v] = tol++;
         }
-        bool spfa(int s, int t) {
+        //Mincost
+        bool spfamin(int s, int t) {
                 queue<int>q;
                 for (int i = 0; i < N; i++) {
                         dis[i] = INF;
@@ -67,7 +70,71 @@ struct Mcmf {
         int minCostMaxflow(int s, int t, int &cost) {
                 int flow = 0;
                 cost = 0;
-                while (spfa(s, t)) {
+                while (spfamin(s, t)) {
+                        int Min = INF;
+                        for (int i = pre[t]; i != -1; i = pre[edge[i ^ 1]. to]) {
+                                if (Min > edge[i]. cap - edge[i]. flow) {
+                                        Min = edge[i]. cap - edge[i]. flow;
+                                }
+                        }
+                        for (int i = pre[t]; i != -1; i = pre[edge[i ^ 1]. to]) {
+                                edge[i]. flow += Min;
+                                edge[i ^ 1]. flow -= Min;
+                                cost += edge[i]. cost * Min;
+                        }
+                        flow += Min;
+                }
+                /*
+                for(int i=1;i<=n;i++)
+                {
+                    for(int j = head[i]; j != -1; j = edge[j]. next)
+                    {
+                        if(edge[j].to==0)
+                            continue;
+                        MMm[i][edge[j].to-n] += edge[j].flow;
+                    }
+                }
+                */
+                return flow;
+        }
+        //Maxcost
+        bool spfamax(int s, int t) {
+                queue<int>q;
+                for (int i = 0; i < N; i++) {
+                        dis[i] = -INF;
+                        vis[i] = false;
+                        pre[i] = -1;
+                }
+                dis[s] = 0;
+                vis[s] = true;
+                q.push(s);
+                while (!q.empty()) {
+                        int u = q.front();
+                        q.pop();
+                        vis[u] = false;
+                        for (int i = head[u]; i != -1; i = edge[i]. next) {
+                                int v = edge[i]. to;
+                                if (edge[i]. cap > edge[i]. flow &&
+                                                dis[v] < dis[u] + edge[i]. cost ) {
+                                        dis[v] = dis[u] + edge[i]. cost;
+                                        pre[v] = i;
+                                        if (!vis[v]) {
+                                                vis[v] = true;
+                                                q.push(v);
+                                        }
+                                }
+                        }
+                }
+                if (pre[t] == -1) {
+                        return false;
+                } else {
+                        return true;
+                }
+        }
+        int maxCostMaxflow(int s, int t, int &cost) {
+                int flow = 0;
+                cost = 0;
+                while (spfamax(s, t)) {
                         int Min = INF;
                         for (int i = pre[t]; i != -1; i = pre[edge[i ^ 1]. to]) {
                                 if (Min > edge[i]. cap - edge[i]. flow) {
