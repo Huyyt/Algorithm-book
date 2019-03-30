@@ -1,10 +1,10 @@
 //Directed tarjan(without repeat edge)
 int deep, colorsum = 0;
-int top;/*staÄ¿Ç°µÄ´óĞ¡*/
-int dfn[maxn], color[maxn], low[maxn];
-int sta[maxn];//´æ×Åµ±Ç°ËùÓĞ¿ÉÄÜÄÜ¹¹³ÉÇ¿Á¬Í¨·ÖÁ¿µÄµã
-bool visit[maxn];//±íÊ¾Ò»¸öµãÄ¿Ç°ÊÇ·ñÔÚstaÖĞ
-int cnt[maxn];//¸÷¸öÇ¿Á¬Í¨·ÖÁ¿ÖĞº¬µãµÄÊıÄ¿
+int top;/*staç›®å‰çš„å¤§å°*/
+int dfn[MAXN], color[MAXN], low[MAXN];
+int sta[MAXN];//å­˜ç€å½“å‰æ‰€æœ‰å¯èƒ½èƒ½æ„æˆå¼ºè¿é€šåˆ†é‡çš„ç‚¹
+bool visit[MAXN];//è¡¨ç¤ºä¸€ä¸ªç‚¹ç›®å‰æ˜¯å¦åœ¨staä¸­
+int cnt[MAXN];//å„ä¸ªå¼ºè¿é€šåˆ†é‡ä¸­å«ç‚¹çš„æ•°ç›®
 void tarjan(int x) {
         dfn[x] = ++deep;
         low[x] = deep;
