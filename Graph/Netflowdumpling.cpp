@@ -4,7 +4,7 @@ using namespace std;
 const int MAXN = 1050;
 const int MAXM = 1000;
 const int INF = 1000000050;
-int Head[MAXN], cur[MAXN], lev[MAXN], to[MAXM << 1], nxt[MAXM << 1], f[MAXM << 1], ed, S, T;
+int Head[MAXN], cur[MAXN], lev[MAXN], to[MAXM << 1], nxt[MAXM << 1], f[MAXM << 1], ed = 1, S, T;
 inline void addedge(int u, int v, int cap) {
         to[++ed] = v;
         nxt[ed] = Head[u];
