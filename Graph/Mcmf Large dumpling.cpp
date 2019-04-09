@@ -1,17 +1,10 @@
 //Mcmf LargeDumpling
-#include<iostream>
-#include<cstdio>
-#include<cstdlib>
-#include<cstring>
-#include<cmath>
-#include<queue>
-#include<algorithm>
+#include<bits/stdc++.h>
 using namespace std;
 const int INF = 0x7f7f7f7f;
 const int MAXN = 505, MAXM = 1300;
-int need[MAXN], day, p, kd, kf, md, mf;
-int Head[MAXN], cur[MAXN], lev[MAXN], to[MAXM << 1], nxt[MAXM << 1], f[MAXM << 1], mono[MAXM << 1], ed, S, T;
-int x[MAXN], y[MAXN], pre[MAXN];
+int Head[MAXN], cur[MAXN], lev[MAXN], to[MAXM << 1], nxt[MAXM << 1], f[MAXM << 1], mono[MAXM << 1], ed = 1, S, T;
+int pre[MAXN];
 bool exist[MAXN];
 void init() {
         memset(Head, 0, sizeof(Head));
@@ -107,29 +100,5 @@ int MCMF() {
 }
 int main() {
         init();
-        scanf("%d", &day);
-        for (int i = 1; i <= day; i++) {
-                scanf("%d", &need[i]);
-                x[i] = i;
-                y[i] = i + day;
-        }
-        scanf("%d%d%d%d%d", &p, &kd, &kf, &md, &mf);
-        for (int i = 1; i <= day; i++) {
-                if (i + 1 <= day) {
-                        addedge(x[i], x[i + 1], INF, 0);
-                }
-                if (i + kd <= day) {
-                        addedge(x[i], y[i + kd], INF, kf);
-                }
-                if (i + md <= day) {
-                        addedge(x[i], y[i + md], INF, mf);
-                }
-                addedge(S, x[i], need[i], 0);
-                addedge(S, y[i], INF, p);
-                addedge(y[i], T, need[i], 0);
-        }
-        printf("%d", MCMF());
-        fclose(stdin);
-        fclose(stdout);
         return 0;
 }
