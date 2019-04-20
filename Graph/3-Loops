@@ -1,0 +1,131 @@
+复杂度：O(msqrt(m))
+步骤：按点的度数分成两类，分别暴力
+1.统计每个点的度数
+2.入度<=sqrt(m)的分为第一类，入度>sqrt(m)的分为第二类
+3.对于第一类，暴力每个点，然后暴力这个点的任意两条边，再判断这两条边的另一个端点是否连接
+因为m条边最多每条边遍历一次，然后暴力的点的入度<=sqrt(m)，所以复杂度约为O(msqrt(m))
+4.对于第二类，直接暴力任意三个点，判断这三个点是否构成环，因为这一类点的个数不会超过sqrt(m)个，
+所以复杂度约为O(sqrt(m)^3)=O(msqrt(m))
+const int MAXN = 100050;
+set<int> mapp[MAXN];
+bool vis[MAXN];
+int Du[MAXN];
+vector<int> high;
+int N,M;
+int main(){
+	while(scanf("%d %d",&N,&M)!=EOF){
+		memset(Du,0,sizeof Du);
+		memset(vis,false,sizeof vis);
+		for(int i=1 ; i<=M ; ++i){
+			int a,b;
+			scanf("%d %d",&a,&b);
+			mapp[a].insert(b);
+			mapp[b].insert(a);
+			Du[a]++;Du[b]++;
+		}
+		int s = sqrt(M);
+		long long sum = 0; //三元环数量 
+		for(int i=1 ; i<=N ; ++i){
+			if(Du[i]<=s){
+				vis[i] = true;
+				set<int>::iterator it;
+				for(it=mapp[i].begin() ; it!=mapp[i].end() ; ++it){
+					if(vis[*it])continue;
+					set<int>::iterator itt;
+					for(itt=it ; itt!=mapp[i].end() ; ++itt){
+						if(vis[*itt])continue;
+						if(mapp[*it].find(*itt) != mapp[*it].end()){
+							++sum;
+						}
+					}
+				}
+			}
+			else {
+				high.push_back(i);
+			}
+		}
+		for(int i=0 ; i<high.size() ; ++i){
+			for(int j=i+1 ; j<high.size() ; ++j){
+				if(mapp[high[i]].find(high[j]) == mapp[high[i]].end())continue;
+				for(int k=j+1 ; k<high.size() ; ++k){
+					if(mapp[high[i]].find(high[k])!=mapp[high[i]].end() && mapp[high[j]].find(high[k])!=mapp[high[j]].end())
+						++sum;
+				}
+			}
+		}
+		for(int i=1 ; i<=N ; ++i)mapp[i].clear();
+		high.clear();
+	}
+	return 0;
+}
+
+HDU-6184
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int MAXN=100005;
+const int MAXM=200005;
+vector<int> G[MAXN];
+pair<int,int> Edge[MAXM];
+int vis[MAXN];
+int n,m;
+int u,v;
+void init()
+{
+	for(int i=1;i<=n;i++)
+	G[i].clear(),vis[i]=0;
+}
+ll ans,loopnum;
+int main(){
+	while(scanf("%d %d",&n,&m)!=EOF)
+	{
+		init();
+		ans=loopnum=0;
+		for(int i=0;i<m;i++)
+		{
+			scanf("%d %d",&u,&v);
+			if(u>v)
+			swap(u,v);
+			G[u].push_back(v);
+			G[v].push_back(u);
+			Edge[i]=make_pair(u,v);
+		}
+		sort(Edge,Edge+m);
+		int limit=sqrt(m+0.5);
+		for(int i=1;i<=n;i++)
+		{
+			for(int j:G[i])
+			{
+				vis[j]=i;
+			}
+			for(int j:G[i])
+			{
+				if(j>i)
+				{
+					loopnum=0;
+					if(G[j].size()>limit)
+					{
+						for(int k:G[i])
+						{
+							pair<int,int> tmp=make_pair(j,k);
+							if(tmp.first>tmp.second)
+							{
+								swap(tmp.first,tmp.second);
+							}
+							int aim=lower_bound(Edge,Edge+m,tmp)-Edge;
+							if(aim<m&&Edge[aim]==tmp)
+							loopnum++;
+						}
+					}
+					else
+					for(int k:G[j])
+					if(vis[k]==i)
+					loopnum++;//三元环数量
+					ans+=loopnum*(loopnum-1)/2;
+				}
+			}
+		}
+		cout<<ans<<endl;
+	}
+	return 0;
+} 
