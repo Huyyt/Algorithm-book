@@ -1,4 +1,6 @@
 //cut point&bridge
+dfn[u]表示顶点u第几个被(首次)访问
+low[u]表示顶点u及其子树中的点通过非父子边(回边)能够回溯到的最早的点(dfn最小)的dfn值(但不能通过连接u与其父节点的边)
 int deep;
 int dfn[maxn], low[maxn];
 bool iscut[maxn], isbridge[maxm << 1];
