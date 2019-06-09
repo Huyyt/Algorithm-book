@@ -1,76 +1,82 @@
 /*
- *  Steiner Tree：求，使得指定K个点连通的生成树的最小总权值
+ *  Steiner Tree：求，使得指定K个点连通的生成树的最小总权值 复杂度O(n*3^k+cE*2^k) c为SPFA复杂度中的常数，E为边的数量
  *  st[i] 表示顶点i的标记值，如果i是指定集合内第m(0<=m<K)个点，则st[i]=1<<m
  *  endSt=1<<K
  *  dptree[i][state] 表示以i为根，连通状态为state的生成树值
  */
-#define CLR(x,a) memset(x,a,sizeof(x))
-int dptree[N][1 << K], st[N], endSt;
-bool vis[N][1 << K];
-queue<int> que;
-int input()
-{
-    /*
-     *    输入，并且返回指定集合元素个数K
-     *    因为有时候元素个数需要通过输入数据处理出来，所以单独开个输入函数。
-     */
+//Gym - 101908J
+#include<bits/stdc++.h>
+using namespace std;
+const int MAXN = 105;
+const int MAXM = 200005;
+const int K = 11;
+const double INF = 1000000000;
+int n, k;
+double f[MAXN][1 << K];
+queue<int> q;
+bool in[MAXN];
+int x[MAXN], y[MAXN];
+int to[MAXM << 1], nxt[MAXM << 1], Head[MAXN], ed = 1;
+double cost[MAXM << 1];
+inline void addedge(int u, int v, double c) {
+        to[++ed] = v;
+        cost[ed] = c;
+        nxt[ed] = Head[u];
+        Head[u] = ed;
 }
-void initSteinerTree()
-{
-    CLR(dptree, -1);
-    CLR(st, 0);
-    for (int i = 1; i <= n; i++) {
-        CLR(vis[i], 0);
-    }
-    endSt = 1 << input();
-    for (int i = 1; i <= n; i++) {
-        dptree[i][st[i]] = 0;
-    }
-}
-void update(int &a, int x)
-{
-    a = (a > x || a == -1) ? x : a;
-}
-void SPFA(int state)
-{
-    while (!que.empty()) {
-        int u = que.front();
-        que.pop();
-        vis[u][state] = false;
-        for (int i = p[u]; i != -1; i = e[i].next) {
-            int v = e[i].vid;
-            if (dptree[v][st[v] | state] == -1 ||
-                    dptree[v][st[v] | state] > dptree[u][state] + e[i].w) {
-                dptree[v][st[v] | state] = dptree[u][state] + e[i].w;
-                if (st[v] | state != state || vis[v][state]) {
-                    continue;    //只更新当前连通状态
+void spfa(int S) {
+        while (!q.empty()) {
+                int now = q.front();
+                q.pop();
+                in[now] = 0;
+                for (int i = Head[now]; i; i = nxt[i]) {
+                        int v = to[i];
+                        if (v <= k)
+                                continue;
+                        if (f[v][S] > f[now][S] + cost[i]) {
+                                f[v][S] = f[now][S] + cost[i];
+                                if (!in[v])
+                                        q.push(v), in[v] = 1;
+                        }
                 }
-                vis[v][state] = true;
-                que.push(v);
-            }
         }
-    }
 }
-void steinerTree()
-{
-    for (int j = 1; j < endSt; j++) {
+void work() {
         for (int i = 1; i <= n; i++) {
-            if (st[i] && (st[i]&j) == 0) {
-                continue;
-            }//如果当前状态没有i节点 跳过
-            for (int sub = (j - 1)&j; sub; sub = (sub - 1)&j) {
-                //枚举子集 更新
-                int x = st[i] | sub, y = st[i] | (j - sub);
-                if (dptree[i][x] != -1 && dptree[i][y] != -1) {
-                    update(dptree[i][j], dptree[i][x] + dptree[i][y]);
-                }
-            }
-            if (dptree[i][j] != -1) {
-                que.push(i), vis[i][j] = true;
-            }
+                for (int j = 0; j <= (1 << k); j++)
+                        f[i][j] = INF;
         }
-        SPFA(j);
-    }
+        for (int i = 1; i <= k; i++)  //指定集合初始化为0
+                f[i][1 << (i - 1)] = 0;
+        for (int sta = 1; sta < (1 << k); sta++) {
+                for (int i = 1; i <= n; i++) {
+                        for (int s = sta & (sta - 1); s; s = (s - 1)&sta) {
+                                f[i][sta] = min(f[i][sta], f[i][s] + f[i][sta ^ s]);
+                        }
+                        if (f[i][sta] != INF)
+                                q.push(i), in[i] = 1;
+                }
+                spfa(sta);
+        }
+        double ans = INF;
+        for (int i = 1; i <= n; i++)
+                ans = min(ans, f[i][(1 << k) - 1]);
+        printf("%.5f\n", ans);
+}
+int main() {
+        scanf("%d %d", &n, &k);
+        for (int i = 1; i <= n; i++) {
+                scanf("%d %d", &x[i], &y[i]);
+        }
+        for (int i = 1; i <= n; i++) {
+                for (int j = i + 1; j <= n; j++) {
+                        int xxx = (x[i] - x[j]) * (x[i] - x[j]) + (y[i] - y[j]) * (y[i] - y[j]);
+                        double dis = sqrt(xxx);
+                        addedge(i, j, dis);
+                        addedge(j, i, dis);
+                }
+        }
+        work();
 }
 
 
