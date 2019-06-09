@@ -31,7 +31,7 @@ void spfa(int S) {
                 in[now] = 0;
                 for (int i = Head[now]; i; i = nxt[i]) {
                         int v = to[i];
-                        if (v <= k)
+                        if (v <= k)//正常板里需要删去
                                 continue;
                         if (f[v][S] > f[now][S] + cost[i]) {
                                 f[v][S] = f[now][S] + cost[i];
