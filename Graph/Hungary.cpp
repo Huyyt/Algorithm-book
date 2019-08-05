@@ -1,9 +1,9 @@
 //Hungary
 #define N 202
-int useif[N];   //¼ÇÂ¼yÖĞ½ÚµãÊÇ·ñÊ¹ÓÃ 0±íÊ¾Ã»ÓĞ·ÃÎÊ¹ı£¬1Îª·ÃÎÊ¹ı
-int link[N];   //¼ÇÂ¼µ±Ç°Óëy½ÚµãÏàÁ¬µÄxµÄ½Úµã
-int mat[N][N]; //¼ÇÂ¼Á¬½ÓxºÍyµÄ±ß£¬Èç¹ûiºÍjÖ®¼äÓĞ±ßÔòÎª1£¬·ñÔòÎª0
-int gn, gm;   //¶ş·ÖÍ¼ÖĞxºÍyÖĞµãµÄÊıÄ¿
+int useif[N];   //è®°å½•yä¸­èŠ‚ç‚¹æ˜¯å¦ä½¿ç”¨ 0è¡¨ç¤ºæ²¡æœ‰è®¿é—®è¿‡ï¼Œ1ä¸ºè®¿é—®è¿‡
+int link[N];   //è®°å½•å½“å‰ä¸yèŠ‚ç‚¹ç›¸è¿çš„xçš„èŠ‚ç‚¹
+int mat[N][N]; //è®°å½•è¿æ¥xå’Œyçš„è¾¹ï¼Œå¦‚æœiå’Œjä¹‹é—´æœ‰è¾¹åˆ™ä¸º1ï¼Œå¦åˆ™ä¸º0
+int gn, gm;   //äºŒåˆ†å›¾ä¸­xå’Œyä¸­ç‚¹çš„æ•°ç›®
 int can(int t) {
         int i;
         for (i = 1; i <= gm; i++) {
@@ -28,4 +28,110 @@ int MaxMatch() {
                 }
         }
         return num;
+}
+
+
+
+
+
+
+const int maxn = 1000 + 5;
+struct BPM {
+    int n, m;
+    vector<int > G[maxn];
+    int left[maxn];
+    bool T[maxn];
+
+    int right[maxn];
+    bool S[maxn];
+
+    void init(int n, int m)
+    {
+        this -> n = n;
+        this -> m = m;
+        for (int i = 0; i < maxn; i++) {
+            G[i].clear();
+        }
+    }
+    void AddEdge(int u, int v)
+    {
+        G[u].push_back(v);
+    }
+    bool match(int u)
+    {
+        S[u] = true;
+        for (int i = 0; i < G[u].size(); i++) {
+            int v = G[u][i];
+            if (!T[v]) {
+                T[v] = true;
+                if (left[v] == -1 || match(left[v])) {
+                    left[v] = u;
+                    right[u] = v;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    int solve()
+    {
+        memset(left, -1, sizeof(left));
+        memset(right, -1, sizeof(right));
+        int ans = 0;
+        for (int u = 0; u < n; u++) {
+            memset(S, 0, sizeof(S));
+            memset(T, 0, sizeof(T));
+            if (match(u)) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+    int mincover(vector<int>& X, vector<int>& Y)
+    {
+        int ans = solve();
+        memset(S, 0, sizeof(S));
+        memset(T, 0, sizeof(T));
+        for (int u = 0; u < n; u++)
+            if (right[u] == -1) {
+                match(u);
+            }
+        for (int u = 0; u < n; u++)
+            if (!S[u]) {
+                X.push_back(u);
+            }
+        for (int v = 0; v < m; v++)
+            if (T[v]) {
+                Y.push_back(v);
+            }
+        return  ans;
+    }
+};
+BPM solver;
+int main()
+{
+    int n, r, c;
+    while (scanf("%d%d%d", &r, &c, &n)) {
+        if (r == 0 && c == 0 && n == 0) {
+            break;
+        }
+        solver.init(r, c);
+        while (n--) {
+            int x, y;
+            scanf("%d%d", &x, &y);
+            x--;
+            y--;//æ¨¡ç‰ˆä¸­ç¼–å·æ˜¯ä»0å¼€å§‹çš„
+            solver.AddEdge(x, y);
+        }
+        vector<int> X, Y;
+        printf("%d", solver.mincover(X, Y));
+        for (int i = 0; i < X.size(); i++) {
+            printf(" r%d", X[i] + 1);    //æœ€ååˆ«å¿˜äº†åŠ å›æ¥
+        }
+        for (int j = 0; j < Y.size(); j++) {
+            printf(" c%d", Y[j] + 1);
+        }
+        printf("\n");
+    }
+    return 0;
 }
