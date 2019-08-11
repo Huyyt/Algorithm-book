@@ -96,7 +96,7 @@ int main() {
                 dinic::MAXP = n;
                 dinic::init(s, t);
                 for (int i = 1; i <= m; i++) {
-                        scanf("%d %d %d", &u, &v, &c);
+                        cin >> u >> v >> c;
                         dinic::addedge(u, v, c);
                 }
                 printf("%d\n", dinic::Dinic());
