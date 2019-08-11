@@ -89,7 +89,8 @@ namespace dinic {
 }
 int main() {
         int n, m, s, t;
-        int u, v, c;
+        int u, v;
+        JQK c;
         while (scanf("%d %d", &n, &m) == 2) {
                 scanf("%d %d", &s, &t);
                 dinic::MAXP = n;
