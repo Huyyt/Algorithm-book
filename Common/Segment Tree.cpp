@@ -1,5 +1,83 @@
 #include<bits/stdc++.h>
 using namespace std;
+const int MAXN = 300005;
+struct Seg_Tre {
+        int l, r;
+        int w;
+} tree[MAXN << 2];
+inline void push_up(int x) {
+        tree[x].w = max(tree[x << 1].w, tree[(x << 1) | 1].w);
+}
+inline void build(int x, int ll, int rr) {
+        tree[x].l = ll, tree[x].r = rr;
+        if (tree[x].l == tree[x].r) {
+                tree[x].w = number[ll];
+                return;
+        }
+        int m = (ll + rr) >> 1;
+        build(x << 1, ll, m);
+        build((x << 1 | 1), m + 1, rr);
+        push_up(x);
+}
+inline void change_point(int x, int aim, int add) {
+        if (tree[x].l == tree[x].r) {
+                tree[x].w += add;
+                return;
+        }
+        int m = (tree[x].l + tree[x].r) >> 1;
+        if (aim <= m) {
+                change_point(x << 1, aim, add);
+        } else {
+                change_point((x << 1) | 1, aim, add);
+        }
+        push_up(x);
+}
+inline int ask_interval(int x, int ll, int rr) {
+        if (tree[x].l > rr || tree[x].r < ll)
+                return -1;
+        if (tree[x].l >= ll && tree[x].r <= rr) {
+                return tree[x].w;
+        }
+        int now = 0;
+        int m = (tree[x].l + tree[x].r) >> 1;
+        if (ll <= m) {
+                now = max(now, ask_interval(x << 1, ll, m));
+        }
+        if (rr > m) {
+                now = max(now, ask_interval((x << 1) | 1, m + 1, rr));
+        }
+        return now;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include<bits/stdc++.h>
+using namespace std;
 int n, p, a, b, m, x, y, ans;
 struct Seg_Tre {
         int l, r;
