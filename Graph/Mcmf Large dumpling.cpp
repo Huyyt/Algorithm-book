@@ -60,7 +60,7 @@ bool BFS()
 }
 JQK Augment()
 {
-    int delta = INF;
+    JQK delta = INF;
     for (int i = pre[T]; i; i = pre[to[i ^ 1]])
         if (f[i] < delta) {
             delta = f[i];
