@@ -1,8 +1,8 @@
-//Netflow dumpling
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
 typedef int JQK;
+int n, m;
 namespace dinic {
         const int MAXN = 10050;
         const int MAXM = 100050;
@@ -23,8 +23,9 @@ namespace dinic {
         }
         inline bool BFS() {
                 int u;
-                for (int i = 0; i <= MAXP + 1; i++)
+                for (int i = 0; i <= MAXP + 1; i++) {
                         lev[i] = -1;
+                }
                 //memset(lev, -1, sizeof(lev));
                 queue<int>q;
                 lev[S] = 0;
@@ -45,8 +46,9 @@ namespace dinic {
                                         */
                                 }
                 }
-                for (int i = 0; i <= MAXP + 1; i++)
+                for (int i = 0; i <= MAXP + 1; i++) {
                         cur[i] = Head[i];
+                }
                 //memcpy(cur, Head, sizeof Head);
                 return lev[T] != -1;
         }
@@ -79,31 +81,35 @@ namespace dinic {
                 return ans;
         }
         void init(int SS, int TT) {
-                for (int i = 0; i <= MAXP + 1; i++)
+                for (int i = 0; i <= MAXP + 1; i++) {
                         Head[i] = 0;
+                }
                 ed = 1;
                 S = SS;
                 T = TT;
                 return;
         }
+        void work() {
+                int u, v, c;
+                for (int i = 1; i <= m; i++) {
+                        scanf("%d %d %d", &u, &v, &c);
+                        addedge(u, v, c);
+                }
+                printf("%d\n", Dinic());
+        }
 }
 int main() {
-        int n, m, s, t;
+        int s, t;
         int u, v;
         JQK c;
         while (scanf("%d %d", &n, &m) == 2) {
                 scanf("%d %d", &s, &t);
                 dinic::MAXP = n;
                 dinic::init(s, t);
-                for (int i = 1; i <= m; i++) {
-                        cin >> u >> v >> c;
-                        dinic::addedge(u, v, c);
-                }
-                printf("%d\n", dinic::Dinic());
+                dinic::work();
         }
         return 0;
 }
-
 
 
 
