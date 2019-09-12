@@ -121,14 +121,11 @@ namespace dinic {
         }
 }
 int main() {
-        int n, m, s, t;
+        int n, m,s1,t1,s2,t2;
         int u, v;
         JQK c;
-        while (scanf("%d %d", &n, &m) == 2) {
-                scanf("%d %d", &s, &t);
-                dinic::MAXP = n;
-                dinic::init(s, t);
-                dinic::work();
-        }
+        dinic::MAXP = n;
+        dinic::init(s1,t1,s2,t2);
+        dinic::work();
         return 0;
 }
