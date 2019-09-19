@@ -30,15 +30,15 @@ inline int read() {
 struct Line {
         int v, next;
 } e[MAXM];
-int h[MAXN], cnt = 1;
+int h[MAXN], ed = 1;
 inline void Add(int u, int v) {
-        e[cnt] = (Line) {
+        e[ed] = (Line) {
                 v, h[u]
         };
-        h[u] = cnt++;
+        h[u] = ed++;
 }
-int match[MAXN], pre[MAXN], f[MAXN], vis[MAXN], tim, dfn[MAXN];
-int n, m, ans;
+int match[MAXN], pre[MAXN], f[MAXN], vis[MAXN], dfn[MAXN];
+int n, m, ans, tim;
 int getf(int x) {
         return x == f[x] ? x : f[x] = getf(f[x]);
 }
