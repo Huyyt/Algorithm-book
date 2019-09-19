@@ -115,9 +115,10 @@ int main() {
                 Add(u, v);
                 Add(v, u);
         }
-        for (int i = 1; i <= n; ++i)if (!match[i]) {
+        for (int i = 1; i <= n; ++i)
+        if (!match[i]) {
                 ans += Aug(i);
-                }
+        }
         printf("%d\n", ans);
         for (int i = 1; i <= n; ++i) {
                 printf("%d ", match[i]);
