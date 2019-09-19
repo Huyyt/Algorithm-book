@@ -10,70 +10,55 @@
 #include<bits/stdc++.h>
 #define RG register
 using namespace std;
+typedef long long ll;
 const int MAXN = 555;
 const int MAXM = 255555;
-typedef long long ll;
-inline int read() {
-        RG int x = 0, t = 1;
-        RG char ch = getchar();
-        while ((ch < '0' || ch > '9') && ch != '-') {
-                ch = getchar();
-        }
-        if (ch == '-') {
-                t = -1, ch = getchar();
-        }
-        while (ch <= '9' && ch >= '0') {
-                x = x * 10 + ch - 48, ch = getchar();
-        }
-        return x * t;
-}
+int Head[MAXN], match[MAXN], pre[MAXN], father[MAXN], vis[MAXN], dfn[MAXN];
+int n, m, ans, tim, ed = 1;
+queue<int> Q;
 struct Line {
         int v, next;
 } e[MAXM];
-int h[MAXN], ed = 1;
-inline void Add(int u, int v) {
+inline void addedge(int u, int v) {
         e[ed] = (Line) {
-                v, h[u]
+                v, Head[u]
         };
-        h[u] = ed++;
+        Head[u] = ed++;
 }
-int match[MAXN], pre[MAXN], f[MAXN], vis[MAXN], dfn[MAXN];
-int n, m, ans, tim;
-int getf(int x) {
-        return x == f[x] ? x : f[x] = getf(f[x]);
+int getfa(int x) {
+        return x == father[x] ? x : father[x] = getfa(father[x]);
 }
 int lca(int u, int v) {
         ++tim;
-        u = getf(u);
-        v = getf(v);
+        u = getfa(u);
+        v = getfa(v);
         while (dfn[u] != tim) {
                 dfn[u] = tim;
-                u = getf(pre[match[u]]);
+                u = getfa(pre[match[u]]);
                 if (v) {
                         swap(u, v);
                 }
         }
         return u;
 }
-queue<int> Q;
 void Blossom(int x, int y, int w) {
-        while (getf(x) != w) {
+        while (getfa(x) != w) {
                 pre[x] = y, y = match[x];
                 if (vis[y] == 2) {
                         vis[y] = 1, Q.push(y);
                 }
-                if (getf(x) == x) {
-                        f[x] = w;
+                if (getfa(x) == x) {
+                        father[x] = w;
                 }
-                if (getf(y) == y) {
-                        f[y] = w;
+                if (getfa(y) == y) {
+                        father[y] = w;
                 }
                 x = pre[y];
         }
 }
 bool Aug(int S) {
         for (int i = 1; i <= n; ++i) {
-                f[i] = i, vis[i] = pre[i] = 0;
+                father[i] = i, vis[i] = pre[i] = 0;
         }
         while (!Q.empty()) {
                 Q.pop();
@@ -83,9 +68,9 @@ bool Aug(int S) {
         while (!Q.empty()) {
                 int u = Q.front();
                 Q.pop();
-                for (int i = h[u]; i; i = e[i].next) {
+                for (int i = Head[u]; i; i = e[i].next) {
                         int v = e[i].v;
-                        if (getf(u) == getf(v) || vis[v] == 2) {
+                        if (getfa(u) == getfa(v) || vis[v] == 2) {
                                 continue;
                         }
                         if (!vis[v]) {
@@ -107,22 +92,32 @@ bool Aug(int S) {
         }
         return false;
 }
+void init(int x) {
+        ans = tim = 0;
+        ed = 1;
+        for (int i = 0; i <= x + 1; i++) {
+                vis[i] = dfn[i] = pre[i] = match[i] = Head[i] = 0;
+                father[i] = i;
+        }
+}
 int main() {
-        n = read();
-        m = read();
-        for (int i = 1; i <= m; ++i) {
-                int u = read(), v = read();
-                Add(u, v);
-                Add(v, u);
+        while (scanf("%d %d", &n, &m) == 2) {
+                int u, v;
+                init(n);
+                for (int i = 1; i <= m; ++i) {
+                        scanf("%d %d", &u, &v);
+                        addedge(u, v);
+                        addedge(v, u);
+                }
+                for (int i = 1; i <= n; ++i)
+                        if (!match[i]) {
+                                ans += Aug(i);
+                        }
+                printf("%d\n", ans);
+                for (int i = 1; i <= n; ++i) {
+                        printf("%d ", match[i]);
+                }
+                puts("");
         }
-        for (int i = 1; i <= n; ++i)
-        if (!match[i]) {
-                ans += Aug(i);
-        }
-        printf("%d\n", ans);
-        for (int i = 1; i <= n; ++i) {
-                printf("%d ", match[i]);
-        }
-        puts("");
         return 0;
 }
