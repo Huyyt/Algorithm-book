@@ -11,30 +11,29 @@ const int N = 510, M = 14010;
 struct Edge {
         int to, capa, next;
 } e[N << 1];
-int h[N], sum = 0, n, m, now = 0;
+int Head[N], ed = 1, n, m, now = 0;
 int pdx[N], tdx[N], col[N];
 int fa[MAXTALL + 1][N], mn[MAXTALL + 1][N], dep[N];
-
 void add_edge1(int u, int v, int w) {
-        e[++sum].to = v;
-        e[sum].capa = w;
-        e[sum].next = h[u];
-        h[u] = sum;
+        e[++ed].to = v;
+        e[ed].capa = w;
+        e[ed].next = Head[u];
+        Head[u] = ed;
 }
 
 namespace GHT {
         struct Edge {
                 int to, capa, flow, next;
         } e[M];
-        int h[N], sum = 1, s, t;
+        int Head[N], ed = 1, s, t;
         int d[N], cur[N];
         bool vis[N];
 
         void add_edge2(int u, int v, int w) {
-                e[++sum] = {v, w, 0, h[u]};
-                h[u] = sum;
-                e[++sum] = {u, w, 0, h[v]};
-                h[v] = sum;
+                e[++ed] = {v, w, 0, Head[u]};
+                Head[u] = ed;
+                e[++ed] = {u, w, 0, Head[v]};
+                Head[v] = ed;
         }
 
         bool BFS() {
@@ -46,7 +45,7 @@ namespace GHT {
                 while (!q.empty()) {
                         int u = q.front();
                         q.pop();
-                        for (int t = h[u]; t; t = e[t].next) {
+                        for (int t = Head[u]; t; t = e[t].next) {
                                 int v = e[t].to;
                                 if (!vis[v] && e[t].capa > e[t].flow) {
                                         d[v] = d[u] + 1;
@@ -87,11 +86,11 @@ namespace GHT {
                 int flow = 0;
                 s = x;
                 t = y;
-                for (int i = 0; i <= sum; i++) {
+                for (int i = 0; i <= ed; i++) {
                         e[i].flow = 0;
                 }
                 while (BFS()) {
-                        memcpy(cur, h, sizeof(h));
+                        memcpy(cur, Head, sizeof(Head));
                         flow += DFS(s, INF);
                 }
                 return flow;
@@ -99,7 +98,7 @@ namespace GHT {
 
         void dfs(int u) {
                 col[u] = now;
-                for (int t = h[u]; t; t = e[t].next)
+                for (int t = Head[u]; t; t = e[t].next)
                         if (e[t].capa > e[t].flow && col[e[t].to] != now) {
                                 dfs(e[t].to);
                         }
@@ -135,7 +134,7 @@ void dfs(int u, int la) { //LCA dfs
                 fa[i][u] = fa[i - 1][fa[i - 1][u]];
                 mn[i][u] = min(mn[i - 1][u], mn[i - 1][fa[i - 1][u]]);
         }
-        for (int t = h[u]; t; t = e[t].next) {
+        for (int t = Head[u]; t; t = e[t].next) {
                 int v = e[t].to;
                 if (v == la) {
                         continue;
@@ -171,23 +170,34 @@ int getcut(int x, int y) {  // find minedge
         return res;
 }
 
-int main() {
-        int u, v, w, q;
-        scanf("%d%d", &n, &m);
-        //memset(GHT::h, -1, sizeof(GHT::h));
-        for (int i = 1; i <= m; i++) {
-                scanf("%d%d%d", &u, &v, &w);
-                GHT::add_edge2(u, v, w);
-        }
-        for (int i = 1; i <= n; i++) {
+void init(int x) {
+        now = 0;
+        for (int i = 0; i <= x + 1; i++) {
+                GHT::ed = ed = 1;
+                col[i] = tdx[i] = Head[i] = GHT::Head[i] = 0;
                 pdx[i] = i;
         }
-        GHT::build(1, n);
-        dep[1] = 1;
-        dfs(1, 0);
-        for (scanf("%d", &q); q; q--) {
-                scanf("%d%d", &u, &v);
-                printf("%d\n", getcut(u, v));
+}
+int main() {
+        int u, v, w, q;
+        while (scanf("%d%d", &n, &m) == 2) {
+                init(n);
+                //memset(GHT::Head, -1, sizeof(GHT::Head));
+                for (int i = 1; i <= m; i++) {
+                        scanf("%d%d%d", &u, &v, &w);
+                        GHT::add_edge2(u, v, w);
+                }
+                for (int i = 1; i <= n; i++) {
+                        pdx[i] = i;
+                }
+                GHT::build(1, n);
+                dep[1] = 1;
+                dfs(1, 0);
+                for (scanf("%d", &q); q; q--) {
+                        scanf("%d%d", &u, &v);
+                        printf("%d\n", getcut(u, v));
+                }
         }
         return 0;
 }
+
