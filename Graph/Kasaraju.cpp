@@ -1,7 +1,8 @@
 //Kasaraju
-vector<int> G[maxn], G2[maxn];
+const int MAXN = 100005;
+vector<int> G[MAXN], G2[MAXN];
 vector<int> S;
-int vis[maxn], sccno[maxn], scc_cnt;
+int vis[MAXN], sccno[MAXN], scc_cnt;
 void dfs1(int u) {
         if (vis[u]) {
                 return ;
@@ -24,14 +25,33 @@ void dfs2(int u) {
 void find_scc(int n) {
         scc_cnt = 0;
         S.clear();
-        mem(sccno, 0), mem(vis, 0);
+        memset(sccno, 0, sizeof(sccno));
+        memset(vis, 0, sizeof(sccno));
         for (int i = 1; i <= n; i++) {
-                dfs1(i);
+                if (!vis[i]) {
+                        dfs1(i);
+                }
         }
-        for (int i = n; i >= 1; i--) {
+        for (int i = S.size() - 1; i >= 0; i--) {
                 if (!sccno[S[i]]) {
                         scc_cnt++;
                         dfs2(S[i]);
                 }
         }
 }
+int main () {
+        int n, m;
+        scanf("%d %d", &n, &m);
+        for (int i = 1; i <= m; i++) {
+                int u, v;
+                scanf("%d %d", &u, &v);
+                G[u].push_back(v);
+                G2[v].push_back(u);
+        }
+        find_scc(n);
+        for (int i = 1; i <= n; i++) {
+                cout << sccno[i] << " ";
+        }
+        cout << endl;
+}
+
