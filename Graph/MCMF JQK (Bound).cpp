@@ -110,7 +110,6 @@ namespace MCMF {
                         //ans+=DFS(S,INFFLOW)*dis[T];
                 {
                         ans += Augment();
-                        //cout << ans << " " << ++ccc << endl;
                 }
                 if (MAXF != sum) {
                         cout << -1 << endl;
