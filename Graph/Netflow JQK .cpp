@@ -52,7 +52,7 @@ namespace dinic {
                 //memcpy(cur, Head, sizeof Head);
                 return lev[T] != -1;
         }
-        inline JQK DFS(int u, JQK maxf) {
+        JQK DFS(int u, JQK maxf) {
                 if (u == T || !maxf) {
                         return maxf;
                 }
