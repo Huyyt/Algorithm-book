@@ -57,7 +57,7 @@ namespace dinic {
                 //memcpy(cur, Head, sizeof Head);
                 return lev[T] != -1;
         }
-        inline JQK DFS(int u, JQK maxf) {
+        JQK DFS(int u, JQK maxf) {
                 if (u == T || !maxf) {
                         return maxf;
                 }
@@ -130,9 +130,9 @@ namespace dinic {
         }
 }
 int main() {
-        int u, v;
+        int n, m, u, v;
         JQK c;
-        scanf("%d %d %d", &n, &m, &k);
+        scanf("%d %d", &n, &m);
         dinic::MAXP = n + m;
         dinic::init(s1, t1, s2, t2); //S T SS TT
         dinic::work();
