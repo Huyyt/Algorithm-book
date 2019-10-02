@@ -3,23 +3,23 @@ using namespace std;
 typedef long long ll;
 typedef int JQK;
 namespace MCMF {
-        const int INF = 0x7f7f7f7f;
+        const JQK INF = 0x7f7f7f7f;
         const int MAXN = 505, MAXM = 1300;
         int Head[MAXN], cur[MAXN], to[MAXM << 1], nxt[MAXM << 1], f[MAXM << 1], ed = 1;
         int S, T, MAXP, MAXF, pre[MAXN];
-        JQK lev[MAXN], mono[MAXM << 1];
+        JQK lev[MAXN], cost[MAXM << 1];
         bool exist[MAXN];
         void addedge(int u, int v, int cap, JQK val) {
                 to[++ed] = v;
                 nxt[ed] = Head[u];
                 Head[u] = ed;
                 f[ed] = cap;
-                mono[ed] = val;
+                cost[ed] = val;
                 to[++ed] = u;
                 nxt[ed] = Head[v];
                 Head[v] = ed;
                 f[ed] = 0;
-                mono[ed] = -1 * val;
+                cost[ed] = -1 * val;
                 return;
         }
         bool spfa() {
@@ -38,8 +38,8 @@ namespace MCMF {
                         q.pop();
                         exist[u] = false;
                         for (int i = Head[u]; i; i = nxt[i])
-                                if (f[i] && lev[u] + mono[i] < lev[to[i]]) {
-                                        lev[to[i]] = lev[u] + mono[i];
+                                if (f[i] && lev[u] + cost[i] < lev[to[i]]) {
+                                        lev[to[i]] = lev[u] + cost[i];
                                         pre[to[i]] = i;
                                         if (!exist[to[i]]) {
                                                 exist[to[i]] = true;
@@ -54,7 +54,7 @@ namespace MCMF {
                 return lev[T] != INF;
         }
         JQK Augment() {
-                JQK delta = INF;
+                JQK delta = 0x7f7f7f7f;
                 for (int i = pre[T]; i; i = pre[to[i ^ 1]])
                         if (f[i] < delta) {
                                 delta = f[i];
@@ -66,12 +66,12 @@ namespace MCMF {
                 MAXF += delta;
                 return delta * lev[T];
         }
-        void init(int x123, int y123) {
-                MAXP = MAXF = 0;
+        void init(int S1, int T1) {
+                MAXF = 0;
                 memset(Head, 0, sizeof(Head));
                 ed = 1;
-                S = x123;
-                T = y123;
+                S = S1;
+                T = T1;
                 return;
         }
         JQK MCMF() {
@@ -90,6 +90,7 @@ int main() {
 
         return 0;
 }
+
 /*int DFS(int u, int maxf)
 {
     if (u == T || !maxf) {
