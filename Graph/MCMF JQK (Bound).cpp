@@ -3,7 +3,6 @@ using namespace std;
 typedef long long ll;
 typedef int JQK;
 const JQK INF = 0x3f3f3f3f;
-const int MAXN = 505;
 namespace MCMF {
         const int INFFLOW = 0x3f3f3f3f;
         const JQK INFDIS = 0x3f3f3f3f;
@@ -99,28 +98,32 @@ namespace MCMF {
                 }
                 return sum;//sum==dinic 循环流有解
         }
-        JQK work() {
+        JQK mcmf() {
                 JQK ans = 0;
-                memset(exist, false, sizeof(exist));
-                JQK sum = pushdownflow(T);
-                addedge(T, S, INF, 0);
-                swap(S, SS), swap(T, TT);
-                int ccc = 0;
                 while (BFS())
                         //ans+=DFS(S,INFFLOW)*dis[T];
                 {
                         ans += Augment();
                 }
+                return ans;
+        }
+        //最小费用可行流的费用=从SS到TT跑新图的最小费用最大流+原图中每条边的下界流量乘以费用
+        JQK work() {
+                JQK ans = 0;
+                memset(exist, false, sizeof(exist));
+                JQK sum = pushdownflow(TT);
+                addedge(T, S, INF, 0);
+                swap(S, SS), swap(T, TT);
+                ans += mcmf();
                 if (MAXF != sum) {
                         cout << -1 << endl;
                         return 0;
                 }
-                cout << ans << endl;
                 return ans;
         }
 }
-int main()
-{
-
-  return 0;
+int n, x, s, t;
+int main() {
+        
+        return 0;
 }
