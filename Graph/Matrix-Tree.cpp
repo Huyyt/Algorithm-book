@@ -18,54 +18,57 @@ G=(V,E) |V|=n |E|=m.
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef long long JQK;
 const int MAXN = 20;
+const int mod=1e9+7;
 //存储矩阵,下标都从0开始
-ll G[MAXN][MAXN], C[MAXN][MAXN];  //G邻接矩阵 C度数矩阵
+JQK G[MAXN][MAXN], C[MAXN][MAXN];  //G邻接矩阵 C度数矩阵
 bool isFreeX[MAXN];
-ll A[MAXN][MAXN];      //A基尔霍夫矩阵
-ll ab(ll x) {
+JQK A[MAXN][MAXN];      //A基尔霍夫矩阵
+JQK ab(ll x) {
         return x > 0 ? x : -x;
 }
-ll gauss(int n, int m) {//求行列式
-        for (int i = 0; i < m; ++i) {
+JQK gauss(int detn) {//求行列式
+        for (int i = 0; i < detn; ++i) {
                 isFreeX[i] = false;
         }
-        ll ret = 1, neg = 0;
+        JQK ret = 1, neg = 0;
         int r = 1, c = 1;//求n-1阶的行列式，去掉第一阶，所以从1开始
-        for (; r < n && c < m; ++r, ++c) {
+        for (; r < detn && c < detn; ++r, ++c) {
                 int p = r;
-                for (; p < n; ++p) if (A[p][c]) {
+                for (; p < detn; ++p)
+                        if (A[p][c]) {
                                 break;
                         }
-                if (p == n) {
+                if (p == detn) {
                         --r;
                         isFreeX[c] = true;
                         continue;
                 }
                 if (p != r) {
                         neg ^= 1;
-                        for (int i = c; i <= m; ++i) {
+                        for (int i = c; i <= detn; ++i) {
                                 swap(A[p][i], A[r][i]);
                         }
                 }
                 //eliminate coefficient
-                for (int i = r + 1; i < n; ++i) {
+                for (int i = r + 1; i < detn; ++i) {
                         while (A[i][c]) {
-                                ll delta = A[i][c] / A[r][c];
-                                for (int j = c; j <= m; ++j) {
+                                JQK delta = A[i][c] / A[r][c];
+                                for (int j = c; j <= detn; ++j) {
                                         A[i][j] += - delta * A[r][j];
                                 }
                                 if (!A[i][c]) {
                                         break;
                                 }
                                 neg ^= 1;
-                                for (int j = c; j <= m; ++j) {
+                                for (int j = c; j <= detn; ++j) {
                                         swap(A[r][j], A[i][j]);
                                 }
                         }
                 }
         }
-        if (r != n) {
+        if (r != detn) {
                 return 0;
         }
         //0-r-1求n阶行列式，1-r-1求n-1阶行列式
@@ -73,6 +76,39 @@ ll gauss(int n, int m) {//求行列式
                 ret = ret * A[i][i];
         }
         return ab(ret);
+}
+JQK det(int detn) {
+        int i, j, k, f = 1;
+        JQK res = 1, x, y, tmp;
+        for (i = 1; i <= detn; ++i)
+                for (j = 1; j <= detn; ++j) {
+                        A[i][j] = (A[i][j] + mod) % mod;
+                }
+        for (i = 1; i <= detn; ++i) {
+                for (j = i + 1; j <= detn; ++j) {
+                        x = A[i][i], y = A[j][i];
+                        while (y) {
+                                tmp = x / y;
+                                x %= y;
+                                swap(x, y);
+                                for (k = i; k <= detn; ++k) {
+                                        A[i][k] = ((A[i][k] - 1ll * tmp * A[j][k]) % mod + mod) % mod;
+                                }
+                                for (k = i; k <= detn; ++k) {
+                                        swap(A[i][k], A[j][k]);
+                                }
+                                f = -f;
+                        }
+                }
+                if (!A[i][i]) {
+                        return 0;
+                }
+                res = 1ll * res * A[i][i] % mod;
+        }
+        if (f == -1) {
+                res = mod - res;
+        }
+        return (res % mod + mod) % mod;
 }
 int main() {
         int cas;
@@ -93,8 +129,9 @@ int main() {
                         for (int j = 0; j < n; j++) {
                                 A[i][j] = C[i][j] - G[i][j];
                         }
-                ll ans = gauss(n, n);
+                ll ans = gauss(n);
                 printf("%lld\n", ans);
         }
         return 0;
 }
+
