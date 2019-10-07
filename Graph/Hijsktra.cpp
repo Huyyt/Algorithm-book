@@ -1,5 +1,6 @@
 struct HeapNode {
-        int d, u;
+        int d；
+        int u;
         bool operator < (const HeapNode& rhs) const {
                 return d > rhs.d;
         }
