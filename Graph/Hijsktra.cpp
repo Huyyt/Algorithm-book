@@ -1,4 +1,3 @@
-//Hijkstra
 struct HeapNode {
         int d, u;
         bool operator < (const HeapNode& rhs) const {
@@ -8,8 +7,8 @@ struct HeapNode {
 int mindist[MAXN];
 bool vis[MAXN];
 priority_queue<HeapNode> que;
-void Hijkstra(int s) {
-        for (int i = 1; i <= n; i++) {
+void Hijkstra(int s, int N) {
+        for (int i = 1; i <= N; i++) {
                 mindist[i] = INT_MAX;
         }
         mindist[s] = 0;
