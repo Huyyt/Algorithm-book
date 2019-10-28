@@ -74,7 +74,7 @@ namespace MCMF {
                 T = T1;
                 return;
         }
-        JQK MCMF() {
+        JQK mcmf() {
                 JQK ans = 0;
                 memset(exist, false, sizeof(exist));
                 while (spfa())
