@@ -1,4 +1,4 @@
-//Spfa
+//Spfa(BFS)
 int d[MAXN], cnt[MAXN];
 bool vis[MAXN];
 queue<int> q;
@@ -20,7 +20,7 @@ int spfa(int s, int N) {
                         if (d[v] > d[x] + c) {
                                 d[v] = d[x] + c;
                                 cnt[v] = cnt[x] + 1;
-                                if (cnt[v] >= N) {
+                                if (cnt[v] >= N) { //最短路经过的节点数超过N
                                         return -1;
                                 }
                                 if (!vis[v]) {
