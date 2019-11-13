@@ -20,9 +20,8 @@ void Hijkstra(int s, int N) {
                 HeapNode x = que.top();
                 que.pop();
                 int u = x.u;
-                if (vis[u] || mindist[u] != x.d) {
-                        continue;
-                }
+                if (vis[u])
+                continue;
                 vis[u] = true;
                 for (int v, i = Head[u]; i; i = nxt[i]) {
                         v = to[i];
